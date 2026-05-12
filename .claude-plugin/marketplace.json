@@ -7,7 +7,10 @@
   "plugins": [
     {
       "name": "adadvisor",
-      "source": "./",
+      "source": {
+        "source": "github",
+        "repo": "AdAdvisor/skills"
+      },
       "description": "Senior media buyer workflows for Meta (Facebook + Instagram) ad accounts via the AdAdvisor MCP server.",
       "version": "0.1.0",
       "skills": [
