@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+node_modules/
+.env
+.env.local
+research/_drafts/
+research/*.html
+research/*.md.bak
+*.tmp

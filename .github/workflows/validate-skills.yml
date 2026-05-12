@@ -1,0 +1,35 @@
+name: validate-skills
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run validator
+        run: python3 scripts/validate.py
+
+      - name: Lint JSON manifests
+        run: |
+          python3 -m json.tool .claude-plugin/plugin.json > /dev/null
+          python3 -m json.tool .claude-plugin/marketplace.json > /dev/null
+
+      - name: Confirm VERSION file
+        run: |
+          V=$(cat VERSION)
+          echo "Repo version: $V"
+          if [ -z "$V" ]; then
+            echo "VERSION file is empty"
+            exit 1
+          fi

@@ -1,0 +1,57 @@
+{
+  "name": "adadvisor",
+  "owner": {
+    "name": "AdAdvisor AI",
+    "url": "https://adadvisor.ai"
+  },
+  "plugins": [
+    {
+      "name": "adadvisor",
+      "source": "./",
+      "description": "Senior media buyer workflows for Meta (Facebook + Instagram) ad accounts via the AdAdvisor MCP server.",
+      "version": "0.1.0",
+      "skills": [
+        {
+          "name": "adadvisor",
+          "path": "adadvisor",
+          "invoke": "/adadvisor:start"
+        },
+        {
+          "name": "adadvisor-audit",
+          "path": "adadvisor-audit",
+          "invoke": "/adadvisor:audit"
+        },
+        {
+          "name": "adadvisor-diagnose",
+          "path": "adadvisor-diagnose",
+          "invoke": "/adadvisor:diagnose"
+        },
+        {
+          "name": "adadvisor-launch",
+          "path": "adadvisor-launch",
+          "invoke": "/adadvisor:launch"
+        },
+        {
+          "name": "adadvisor-scale",
+          "path": "adadvisor-scale",
+          "invoke": "/adadvisor:scale"
+        },
+        {
+          "name": "adadvisor-creative",
+          "path": "adadvisor-creative",
+          "invoke": "/adadvisor:creative"
+        },
+        {
+          "name": "adadvisor-targeting",
+          "path": "adadvisor-targeting",
+          "invoke": "/adadvisor:targeting"
+        },
+        {
+          "name": "adadvisor-playbooks",
+          "path": "adadvisor-playbooks",
+          "invoke": "/adadvisor:playbooks"
+        }
+      ]
+    }
+  ]
+}
