@@ -70,14 +70,88 @@ Optional Claude-Code-specific fields: `model: opus | sonnet`, `argument-hint`, `
 
 ## CI invariants
 
-`.github/workflows/validate-skills.yml` enforces:
+`.github/workflows/validate-skills.yml` runs `scripts/validate.py`, which enforces:
 
 1. Frontmatter parses; `name` matches directory; `description` contains `Use when` and `NOT for`; `description` ≤ 1024 chars (Anthropic limit).
-2. Version sync — root `VERSION` matches every `SKILL.md` `version:` matches `marketplace.json`/`plugin.json` versions.
-3. Marketplace coverage — every `adadvisor*/` folder is listed in `marketplace.json`.
+2. Version sync — root `VERSION` matches every `skills/adadvisor*/SKILL.md` `version:` field, the top-level `plugin.json` `version`, and each `plugins[].version` inside `marketplace.json`. `marketplace.json` itself has no top-level `version` per the Anthropic spec.
+3. Skill discovery — at least one `skills/adadvisor*/SKILL.md` exists. Skill discovery is automatic via the canonical `skills/` layout, so `marketplace.json` does not enumerate skills.
 4. References resolve — every `[link](references/foo.md)` in `SKILL.md` exists, and every file in `references/` is linked from `SKILL.md`.
-5. No parent-directory traversal — `grep` for `../` returns nothing.
+5. No deep parent traversal — `../../../` is rejected. Cross-skill links via `../<other-skill>/references/X.md` are allowed (they degrade gracefully in standalone installs but improve GitHub navigation).
 6. SKILL.md body length — warn at >300 lines, fail at >500 lines.
+
+## Releases and ZIP distribution
+
+End users install in one of two ways. Both routes consume artifacts the release pipeline produces; nothing is built ad-hoc.
+
+| Audience | Install route | Artifact |
+| --- | --- | --- |
+| Claude Code | `/plugin marketplace add AdAdvisor/skills` + `/plugin install adadvisor@adadvisor` | Live `main` branch (or a tag if pinned) |
+| Claude.ai web / Claude Desktop | Settings → Capabilities → Skills → Upload ZIP | GitHub release artifact |
+| Cursor / Codex / other | `git clone` or download release tarball | GitHub release artifact |
+
+### What ships in each release
+
+`.github/workflows/release.yml` triggers on every `v*.*.*` tag push and produces nine ZIPs attached to the GitHub release:
+
+| Artifact | Contents | Typical size |
+| --- | --- | --- |
+| `adadvisor.zip` | Just `skills/adadvisor/` (foundation, required) | ~22 KB |
+| `adadvisor-audit.zip` | Just `skills/adadvisor-audit/` | ~28 KB |
+| `adadvisor-diagnose.zip` | Just `skills/adadvisor-diagnose/` | ~22 KB |
+| `adadvisor-launch.zip` | Just `skills/adadvisor-launch/` | ~31 KB |
+| `adadvisor-scale.zip` | Just `skills/adadvisor-scale/` | ~26 KB |
+| `adadvisor-creative.zip` | Just `skills/adadvisor-creative/` | ~34 KB |
+| `adadvisor-targeting.zip` | Just `skills/adadvisor-targeting/` | ~28 KB |
+| `adadvisor-playbooks.zip` | Just `skills/adadvisor-playbooks/` | ~32 KB |
+| `adadvisor-all-skills.zip` | Whole plugin: `.claude-plugin/` + `skills/` + `README.md` + `LICENSE` + `VERSION` | ~233 KB |
+
+The Mintlify docs at `adadvisor.ai/docs/skills/` link to these ZIPs via the `https://github.com/AdAdvisor/skills/releases/latest/download/<name>.zip` URL pattern, so docs never go stale — every cut release becomes "latest" automatically and the existing doc links pick up the new build.
+
+### Cutting a new release
+
+Don't hand-bump versions on feature branches. The release pipeline is the only thing that should produce new versions. The flow on `main`:
+
+1. Decide the new version (`vMAJOR.MINOR.PATCH`).
+2. Update `VERSION` at the repo root.
+3. Update the `version:` field in every `skills/adadvisor*/SKILL.md` frontmatter.
+4. Update the `version` field in `.claude-plugin/plugin.json`.
+5. Update each `plugins[].version` in `.claude-plugin/marketplace.json`.
+6. Run `python3 scripts/validate.py`. It will fail if any of the five locations drift.
+7. Commit (`chore(release): v0.1.1`).
+8. Tag and push: `git tag v0.1.1 && git push origin main --tags`.
+9. The `release.yml` workflow takes over: validates, builds all nine ZIPs, creates a GitHub release with the auto-generated changelog, attaches the artifacts.
+
+Once the workflow completes, the `releases/latest/download/<name>.zip` URLs immediately serve the new build. No docs change required.
+
+### Manual release (bootstrap or hotfix)
+
+If the workflow is broken or you need to ship before it lands, you can mirror it locally:
+
+```bash
+mkdir -p /tmp/release
+cd skills
+for d in adadvisor*/; do
+  name="${d%/}"
+  zip -qr "/tmp/release/${name}.zip" "$d"
+done
+cd ..
+zip -qr /tmp/release/adadvisor-all-skills.zip \
+  .claude-plugin/ skills/ README.md LICENSE VERSION
+
+gh release create vX.Y.Z \
+  --title "vX.Y.Z — <one-line summary>" \
+  --generate-notes \
+  /tmp/release/*.zip
+```
+
+This is exactly what the workflow does — keep them in sync if you change one.
+
+### What NOT to do
+
+- **Don't host ZIPs in the docs repo.** They go stale the moment we cut a new skills release. Docs always link to `releases/latest/download/`.
+- **Don't hand-edit the `releases/latest` URL** in docs to a version-pinned one. Latest tracking is intentional.
+- **Don't commit pre-built ZIPs to the skills repo.** They're build artifacts. The workflow rebuilds them on every tag, and the `.gitignore` already excludes them.
+- **Don't bump only some of the five version locations.** The validator catches drift, but the CI run takes a minute. Use the checklist above.
 
 ## Don't
 
