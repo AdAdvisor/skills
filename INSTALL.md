@@ -19,7 +19,7 @@ Without the MCP server, the skills still load but most workflows can't complete 
 /plugin install adadvisor@adadvisor
 ```
 
-`adadvisor@adadvisor` reads as `<plugin-name>@<marketplace-name>` — both happen to be `adadvisor` here, the way `/plugin install higgsfield@higgsfield` works for higgsfield's repo.
+`adadvisor@adadvisor` reads as `<plugin-name>@<marketplace-name>`. Both happen to be `adadvisor` because this repo hosts a single-plugin marketplace whose marketplace name and plugin name are the same.
 
 Verify:
 

@@ -94,16 +94,17 @@ adadvisor-skills/
 │   └── plugin.json                 # plugin manifest
 ├── .github/workflows/
 │   └── validate-skills.yml         # CI: frontmatter, version sync, references, etc.
-├── adadvisor/                      # foundation skill
-│   ├── SKILL.md
-│   └── references/
-├── adadvisor-audit/
-├── adadvisor-diagnose/
-├── adadvisor-launch/
-├── adadvisor-scale/
-├── adadvisor-creative/
-├── adadvisor-targeting/
-├── adadvisor-playbooks/
+├── skills/                         # Anthropic-canonical skills location
+│   ├── adadvisor/                  # foundation skill
+│   │   ├── SKILL.md
+│   │   └── references/
+│   ├── adadvisor-audit/
+│   ├── adadvisor-diagnose/
+│   ├── adadvisor-launch/
+│   ├── adadvisor-scale/
+│   ├── adadvisor-creative/
+│   ├── adadvisor-targeting/
+│   └── adadvisor-playbooks/
 ├── evals/
 │   └── scenarios.md                # 11 worked scenarios, run manually before merging
 ├── scripts/

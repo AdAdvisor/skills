@@ -29,7 +29,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SKILL_GLOB = "adadvisor*/SKILL.md"
+SKILL_GLOB = "skills/adadvisor*/SKILL.md"
 DESC_MAX_LEN = 1024
 BODY_FAIL_LINES = 500
 BODY_WARN_LINES = 300
@@ -105,8 +105,8 @@ def validate() -> list[Issue]:
     plugin, marketplace = _load_plugin_manifests()
 
     # Version sync — plugin.json top-level, and each plugin entry in marketplace.json.
-    # marketplace.json itself does not carry a top-level version (matches higgsfield's
-    # known-working shape); only the per-plugin entries do.
+    # marketplace.json itself does not carry a top-level version per the Anthropic
+    # marketplace schema; only the per-plugin entries do.
     if plugin.get("version") != version:
         issues.append(
             Issue(
@@ -252,41 +252,18 @@ def validate() -> list[Issue]:
                             )
                         )
 
-    # 5. Marketplace coverage — every skill folder must be declared in marketplace.json
-    # under plugins[].skills[].name, and the declared path must point to an existing folder.
-    # plugin.json no longer carries a skills array (higgsfield-shape).
-    declared_in_marketplace: dict[str, str] = {}
-    for mp_plugin in marketplace.get("plugins", []):
-        for s in mp_plugin.get("skills") or []:
-            name = s.get("name")
-            path = s.get("path", name)
-            if name:
-                declared_in_marketplace[name] = path
-    missing_marketplace = skill_names - declared_in_marketplace.keys()
-    extra_marketplace = declared_in_marketplace.keys() - skill_names
-    for s in sorted(missing_marketplace):
-        issues.append(
-            Issue(Issue.LEVEL_ERROR, ".claude-plugin/marketplace.json", f"missing skill '{s}'")
-        )
-    for s in sorted(extra_marketplace):
+    # 5. Skill discovery — skills live at `skills/adadvisor*/SKILL.md` per the
+    # Anthropic plugin spec (skills/ subdirectory under plugin root). The
+    # marketplace.json and plugin.json no longer enumerate individual skills;
+    # discovery is automatic via the canonical layout.
+    if not skill_names:
         issues.append(
             Issue(
                 Issue.LEVEL_ERROR,
-                ".claude-plugin/marketplace.json",
-                f"declares non-existent skill '{s}'",
+                "skills/",
+                "no skills found — expected at least one skills/adadvisor*/SKILL.md",
             )
         )
-    # Verify each declared `path` points to an actual SKILL.md
-    for name, path in declared_in_marketplace.items():
-        skill_md = REPO_ROOT / path / "SKILL.md"
-        if not skill_md.exists():
-            issues.append(
-                Issue(
-                    Issue.LEVEL_ERROR,
-                    ".claude-plugin/marketplace.json",
-                    f"skill '{name}' declares path '{path}' but {path}/SKILL.md is missing",
-                )
-            )
 
     return issues
 

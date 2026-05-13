@@ -30,9 +30,9 @@ A public, MIT/Apache-2.0-licensed collection of Anthropic Agent Skills that pair
 
 ## Naming conventions
 
-- Skill folders: `adadvisor-<noun>` (`adadvisor-audit`, `adadvisor-scale`). The root foundation skill is just `adadvisor`.
+- Skill folders live under `skills/` (Anthropic-canonical plugin layout). Folder names: `skills/adadvisor-<noun>/` (`skills/adadvisor-audit/`, `skills/adadvisor-scale/`). The foundation skill is `skills/adadvisor/`.
 - Skill `name:` in frontmatter MUST match the folder name exactly. CI enforces.
-- Marketplace invocation: `/adadvisor:<verb>` (e.g. `/adadvisor:audit`). The verb is shorter than the folder suffix and not always literal — `/adadvisor:launch` covers `adadvisor-launch`, `/adadvisor:start` covers `adadvisor` itself.
+- Marketplace invocation: `/adadvisor:<skill-folder-name>` per Claude Code's namespacing rule (plugin name `adadvisor` + skill folder name). e.g. `skills/adadvisor-audit/` becomes `/adadvisor:adadvisor-audit`.
 - Reference files: kebab-case, descriptive purpose (`pixel-deep-dive.md`, `kill-rules.md`, `bfcm-timeline.md`). Avoid generic names like `troubleshooting.md` unless that's truly all it is.
 
 ## Frontmatter template
