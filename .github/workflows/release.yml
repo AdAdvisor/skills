@@ -32,16 +32,6 @@ jobs:
             echo "Built dist/${name}.zip"
           done
 
-      - name: Build all-in-one bundle
-        run: |
-          zip -qr dist/adadvisor-all-skills.zip \
-            .claude-plugin/ \
-            skills/ \
-            README.md \
-            LICENSE \
-            VERSION
-          echo "Built dist/adadvisor-all-skills.zip"
-
       - name: List artifacts
         run: ls -lh dist/
 
@@ -60,4 +50,3 @@ jobs:
             dist/adadvisor-creative.zip
             dist/adadvisor-targeting.zip
             dist/adadvisor-playbooks.zip
-            dist/adadvisor-all-skills.zip

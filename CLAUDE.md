@@ -91,7 +91,7 @@ End users install in one of two ways. Both routes consume artifacts the release 
 
 ### What ships in each release
 
-`.github/workflows/release.yml` triggers on every `v*.*.*` tag push and produces nine ZIPs attached to the GitHub release:
+`.github/workflows/release.yml` triggers on every `v*.*.*` tag push and produces eight ZIPs (one per skill) attached to the GitHub release:
 
 | Artifact | Contents | Typical size |
 | --- | --- | --- |
@@ -103,9 +103,10 @@ End users install in one of two ways. Both routes consume artifacts the release 
 | `adadvisor-creative.zip` | Just `skills/adadvisor-creative/` | ~34 KB |
 | `adadvisor-targeting.zip` | Just `skills/adadvisor-targeting/` | ~28 KB |
 | `adadvisor-playbooks.zip` | Just `skills/adadvisor-playbooks/` | ~32 KB |
-| `adadvisor-all-skills.zip` | Whole plugin: `.claude-plugin/` + `skills/` + `README.md` + `LICENSE` + `VERSION` | ~233 KB |
 
-The Mintlify docs at `adadvisor.ai/docs/skills/` link to these ZIPs via the `https://github.com/AdAdvisor/skills/releases/latest/download/<name>.zip` URL pattern, so docs never go stale — every cut release becomes "latest" automatically and the existing doc links pick up the new build.
+Each ZIP wraps exactly one SKILL.md inside one top-level folder — the shape Claude.ai's and Claude Desktop's upload validator requires. We do NOT ship a multi-skill bundle: Claude.ai rejects ZIPs with more than one SKILL.md, and Claude Code installs the entire plugin via `/plugin install adadvisor@adadvisor` (no ZIP needed).
+
+The Mintlify docs at `adadvisor.ai/docs/` link to these ZIPs via the `https://github.com/AdAdvisor/skills/releases/latest/download/<name>.zip` URL pattern, so docs never go stale — every cut release becomes "latest" automatically and the existing doc links pick up the new build.
 
 ### Cutting a new release
 
@@ -135,8 +136,6 @@ for d in adadvisor*/; do
   zip -qr "/tmp/release/${name}.zip" "$d"
 done
 cd ..
-zip -qr /tmp/release/adadvisor-all-skills.zip \
-  .claude-plugin/ skills/ README.md LICENSE VERSION
 
 gh release create vX.Y.Z \
   --title "vX.Y.Z — <one-line summary>" \
