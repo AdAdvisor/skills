@@ -50,3 +50,4 @@ jobs:
             dist/adadvisor-creative.zip
             dist/adadvisor-targeting.zip
             dist/adadvisor-playbooks.zip
+            dist/adadvisor-studio.zip

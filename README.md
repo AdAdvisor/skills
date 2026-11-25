@@ -6,7 +6,7 @@ Agent skills for the [AdAdvisor MCP server](https://app.adadvisor.ai) — codifi
 
 ## What this is
 
-The [AdAdvisor MCP server](https://app.adadvisor.ai) exposes ~33 tools to read and modify Meta ad accounts. Without skills, the MCP client (Claude / ChatGPT / etc.) has to figure out *how* to use those tools from scratch every session — when to audit before mutating, how to read pixel health, what kill thresholds to use, which scaling pattern fits the account size. This repo ships eight skills that codify those decisions so the agent acts like a senior media buyer by default.
+The [AdAdvisor MCP server](https://app.adadvisor.ai) exposes about 60 tools to read and modify Meta ad accounts and to have new ads made of a business's products. Without skills, the MCP client (Claude / ChatGPT / etc.) has to figure out *how* to use those tools from scratch every session — when to audit before mutating, how to read pixel health, what kill thresholds to use, which scaling pattern fits the account size. This repo ships nine skills that codify those decisions so the agent acts like a senior media buyer by default.
 
 ## Skills
 
@@ -20,6 +20,7 @@ The [AdAdvisor MCP server](https://app.adadvisor.ai) exposes ~33 tools to read a
 | `adadvisor-creative` | `/adadvisor:creative` | "Refresh creatives", "test ads", "what to make next" — 3-2-2 / 5-3-1 frameworks, refresh cadence by spend, hook-rate / hold-rate. |
 | `adadvisor-targeting` | `/adadvisor:targeting` | "Audience", "lookalike", "retargeting", "interests" — broad-first targeting, lookalike strategy, exclusion logic. |
 | `adadvisor-playbooks` | `/adadvisor:playbooks` | BFCM, product launch, lead-gen, banned-account recovery, $1k→$10k/day scale plan — tactical SOPs. |
+| `adadvisor-studio` | `/adadvisor:studio` | "Make ads for my product", "review my ads", "design kit", "credits": get a product ready, ask Iris for static ads (spends Credits), review them with the person. |
 
 Each skill is self-contained. Skills chain through references (e.g. `adadvisor-audit` points at `adadvisor-pixel` deep-dive content inside `references/`).
 
@@ -104,9 +105,10 @@ adadvisor-skills/
 │   ├── adadvisor-scale/
 │   ├── adadvisor-creative/
 │   ├── adadvisor-targeting/
-│   └── adadvisor-playbooks/
+│   ├── adadvisor-playbooks/
+│   └── adadvisor-studio/
 ├── evals/
-│   └── scenarios.md                # 11 worked scenarios, run manually before merging
+│   └── scenarios.md                # 13 worked scenarios, run manually before merging
 ├── scripts/
 │   └── validate.py                 # frontmatter + reference resolver
 └── research/                       # branded PDFs of the underlying research

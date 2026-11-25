@@ -27,7 +27,7 @@ Verify:
 /plugin list | grep adadvisor
 ```
 
-You should see all eight skills listed.
+You should see all nine skills listed.
 
 ### Option B — Global skills directory
 

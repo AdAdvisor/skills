@@ -21,6 +21,12 @@ A one-line per-tool summary. Use this to look up *which* tool to call; use the M
 | `adadvisor:search_ad_images` | Find uploaded images by name/hash (visual picker) | Before `create_creative(format='image_link')` |
 | `adadvisor:search_ad_videos` | Find uploaded videos by name (visual picker) | Before `create_creative(format='video')` |
 | `adadvisor:preview_existing_creatives` | Preview creatives that share an asset, with engagement | Before `create_creative` — preserve social proof if it exists |
+| `adadvisor:list_promotable_posts` | Existing organic posts that can be promoted as ads | Before `create_creative(format='existing_post')` |
+| `adadvisor:list_media_assets` | Every media asset in the business's Creatives Hub | To find an uploaded or AdAdvisor-made picture by `asset_id` |
+| `adadvisor:get_results_health` | Whether the account is producing results the way it usually does | Audit and diagnosis, before reading performance as signal |
+| `adadvisor:check_lead_gen_readiness` | Whether the account can run lead gen at all | Before building any lead-gen campaign |
+| `adadvisor:list_lead_forms` | Existing Lead Forms for a Facebook Page | Before `create_lead_form`; to reuse a form |
+| `adadvisor:get_lead_form` | One Lead Form in full: questions, disclaimer, screens | Reviewing a form before attaching it |
 
 ## Resource (read via `ReadMcpResourceTool`)
 
@@ -61,6 +67,7 @@ All produce entities with `status='PAUSED'` by default. NOT idempotent — each 
 | `adadvisor:create_creative` | Create one or more ad creatives (image_link / video / existing_post) (batched) |
 | `adadvisor:create_ad` | Attach creatives to ad sets (batched) |
 | `adadvisor:create_lead_form` | Create one or more Meta Lead Forms on a Page (batched) |
+| `adadvisor:set_lead_form_status` | Archive or reactivate a Lead Form (a form cannot be edited or deleted) |
 
 All produce entities with `status='PAUSED'`. NOT idempotent.
 
@@ -70,6 +77,7 @@ All produce entities with `status='PAUSED'`. NOT idempotent.
 |---|---|
 | `adadvisor:create_website_audience` | Build a custom audience from pixel events (Purchase, AddToCart, ViewContent, etc.) |
 | `adadvisor:create_lookalike_audience` | Build a lookalike from a seed audience (1%-20% ratio, country-scoped) |
+| `adadvisor:create_lead_form_audience` | Build a custom audience from how people interacted with a lead form |
 
 Note: customer-list audiences are uploaded in the AdAdvisor app, not via MCP. Use `list_custom_audiences` to surface them.
 
@@ -80,8 +88,21 @@ Note: customer-list audiences are uploaded in the AdAdvisor app, not via MCP. Us
 | `adadvisor:upload_creatives` | Open the upload widget (LLM-visible entrypoint) |
 | `adadvisor:upload_ad_image` | Upload a single image (called by the widget — agents rarely call directly) |
 | `adadvisor:upload_ad_video` | Upload a single video (called by the widget — agents rarely call directly) |
+| `adadvisor:init_upload` / `adadvisor:complete_upload` | Direct upload steps (called by the widget; agents rarely call directly) |
+| `adadvisor:register_media_assets` | Push Creatives Hub assets to a Meta ad account and get their image hashes | The only way to use an AdAdvisor-made or hub picture in `create_creative` |
 
 Image limit 30MB; video limit 4GB. Allowed: `image/jpeg`, `image/png`, `video/mp4`, `video/quicktime`. `image_hash` returned by `upload_ad_image` must be used in the same conversation — do not reuse across sessions.
+
+## Products, Design Kits, Ad Requests and Ad Concepts
+
+These tools work on a business, not an ad account: they take `business_id` (the UUID beside each account in `list_ad_accounts`). They have their own skill, `adadvisor-studio`, and their own table in its `references/tools.md`.
+
+| Group | Tools |
+|---|---|
+| Products | `list_products`, `get_product`, `add_product_from_link`, `create_product`, `update_product`, `update_product_pictures` |
+| Design Kits | `list_design_kits`, `create_design_kit`, `update_design_kit`, `delete_design_kit` |
+| Ad Requests | `get_credit_balance`, `request_ads` (spends Credits), `get_task_status` |
+| Ad Concepts | `list_ad_concepts`, `get_ad_concept`, `show_ad_concepts`, `give_ad_verdict` |
 
 ## Pagination
 

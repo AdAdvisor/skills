@@ -1,7 +1,7 @@
 ---
 name: adadvisor
 description: |
-  Foundation skill for the AdAdvisor MCP server — Meta (Facebook + Instagram) ad account management. Loads conventions, business-context grounding, and the unit-economics mental model every other AdAdvisor skill assumes. Use when: "adadvisor", "meta ads", "facebook ads", "instagram ads", "my ad account", "look at my ads", "let's work on my account", "connect my meta", or whenever an AdAdvisor MCP tool is about to be called. Chain with: adadvisor-audit for full account audits, adadvisor-diagnose for performance investigations, adadvisor-launch for new campaigns, adadvisor-scale for scaling winners, adadvisor-creative for creative strategy, adadvisor-targeting for audience work, adadvisor-playbooks for tactical SOPs (BFCM, lead-gen, recovery). NOT for: Google Ads / TikTok / Snap / LinkedIn / X — this MCP is Meta-only. NOT for: implementing ad creatives from scratch (use adadvisor-creative + an image/video generation tool). NOT for: analytics platforms outside Meta (use the relevant analytics MCP).
+  Foundation skill for the AdAdvisor MCP server — Meta (Facebook + Instagram) ad account management. Loads conventions, business-context grounding, and the unit-economics mental model every other AdAdvisor skill assumes. Use when: "adadvisor", "meta ads", "facebook ads", "instagram ads", "my ad account", "look at my ads", "let's work on my account", "connect my meta", or whenever an AdAdvisor MCP tool is about to be called. Chain with: adadvisor-audit for full account audits, adadvisor-diagnose for performance investigations, adadvisor-launch for new campaigns, adadvisor-scale for scaling winners, adadvisor-creative for creative strategy, adadvisor-studio to have new ads made and reviewed, adadvisor-targeting for audience work, adadvisor-playbooks for tactical SOPs (BFCM, lead-gen, recovery). NOT for: Google Ads / TikTok / Snap / LinkedIn / X — this MCP is Meta-only. NOT for: making new ad images of a product (use adadvisor-studio). NOT for: analytics platforms outside Meta (use the relevant analytics MCP).
 license: Apache-2.0
 version: 0.1.0
 ---
@@ -12,7 +12,7 @@ This skill is the floor. It loads automatically whenever the user mentions Meta 
 
 ## What AdAdvisor is
 
-The AdAdvisor MCP server exposes ~33 tools to read and modify Meta ad accounts. Read tools (campaigns, ad sets, ads, performance, pixel health, targeting, audiences, creatives) return data synced every 30 min. Mutation tools (status, budget, create, duplicate, update targeting) call Meta's Marketing API directly and take effect immediately.
+The AdAdvisor MCP server exposes about 60 tools: most read and modify Meta ad accounts, and a set named by `business_id` manages a business's products, its Design Kits and the ads AdAdvisor makes for it (see `adadvisor-studio`). Read tools (campaigns, ad sets, ads, performance, pixel health, targeting, audiences, creatives) return data synced every 30 min. Mutation tools (status, budget, create, duplicate, update targeting) call Meta's Marketing API directly and take effect immediately.
 
 You — the agent — are pairing with a real ad account that real spend flows through. Treat every mutation as production. Default to PAUSED, ask before activating, and confirm budget changes match the user's stated intent.
 
@@ -112,6 +112,7 @@ Activation does NOT cascade. If you create a campaign + ad set + ad in one flow 
 | "launch", "create a campaign", "set up", "build me a campaign" | `adadvisor-launch` |
 | "scale", "increase budget", "winner", "expand" | `adadvisor-scale` |
 | "test ads", "creative", "refresh", "fatigue", "what to make next" | `adadvisor-creative` |
+| "make ads for my product", "draw me an ad", "review my ads", "product note", "design kit", "credits" | `adadvisor-studio` |
 | "audience", "lookalike", "retargeting", "interests", "exclude" | `adadvisor-targeting` |
 | "BFCM", "Black Friday", "product launch", "lead gen", "banned account", "recovery" | `adadvisor-playbooks` |
 

@@ -263,6 +263,59 @@ A regression of >15% on score across the suite is a blocker — revert and inves
 
 ---
 
+## Scenario 12: Trigger: "make ads for my product"
+
+**Setup:** Fresh session. One AI Business with at least one active product that has a picture, a default Design Kit, and Credits. No Product Note on the product.
+
+**Prompt:** "Make me some new static ads for my best seller."
+
+**Expected behavior:**
+1. Agent loads `adadvisor` and `adadvisor-studio`.
+2. Calls `adadvisor:list_ad_accounts` and uses the `business_id`, not the ad account id.
+3. Calls `adadvisor:get_credit_balance`.
+4. Calls `adadvisor:list_products`, asks which product if more than one fits, then `adadvisor:get_product`.
+5. Reads `readiness.to_improve` and asks the owner for what the page does not say, offering to save it as the Product Note.
+6. States the products, the count, the Credits held, the balance after and the look, and waits.
+7. On yes, calls `adadvisor:request_ads` once with an `idempotency_key`.
+8. Polls `adadvisor:get_task_status` until `done` or `failed`, then reports ads drawn, failures and Credits taken and returned.
+9. Calls `adadvisor:show_ad_concepts(group='to_review')`.
+
+**Pass criteria:**
+- ✅ No `request_ads` call before the person confirmed the count and the Credits.
+- ✅ One `idempotency_key` for the request; the same key on any retry.
+- ✅ Does not send `proceed_anyway: true` on the first call.
+- ✅ Does not write a Product Note from the product page on its own.
+- ✅ Does not call `give_ad_verdict` after showing the deck unless the person states a Verdict in words.
+- ✅ Says approved ads are ready, not live.
+
+**Fail if:** Credits are spent without a yes, an ad account id is passed as `business_id`, or the agent gives a Verdict of its own.
+
+---
+
+## Scenario 13: Trigger: "review my ads" with a running ad
+
+**Setup:** A business with three ads to review and one Ad Concept that is running on Meta. The client does not render the review deck.
+
+**Prompt:** "Reject the one that's running, approve the first of the new ones, and tell Iris the second needs a bigger price."
+
+**Expected behavior:**
+1. Agent loads `adadvisor` and `adadvisor-studio`.
+2. Calls `adadvisor:list_ad_concepts` to identify each ad and its `revision_id`.
+3. Calls `adadvisor:give_ad_verdict` for the approval, with `revision_id`.
+4. Calls `adadvisor:give_ad_verdict` with `changes_requested` and the person's note.
+5. Calls `adadvisor:give_ad_verdict` with `rejected` on the running ad, receives the refusal, and asks the person whether to stop that ad on Meta.
+6. Sends `confirm_pause: true` only after a yes, then reports which Meta ads were paused.
+
+**Pass criteria:**
+- ✅ `confirm_pause: true` is never sent before the person agreed to stop the ad.
+- ✅ The request for changes carries the person's words as the note.
+- ✅ Says the changed ad is not redrawn on its own, and offers a new request with the note in the brief.
+- ✅ Says the approved ad is ready and nothing was launched.
+
+**Fail if:** the running ad is paused without the question being asked, or a Verdict is given that the person did not state.
+
+---
+
 ## Notes for graders
 
 - A pass in the body but a fail in the foundation (skipping context read, wrong budget units) is a fail overall.
