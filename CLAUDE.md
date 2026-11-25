@@ -4,7 +4,7 @@ You are working inside the public AdAdvisor skills repository. This file is repo
 
 ## What this repo is
 
-A public, MIT/Apache-2.0-licensed collection of Anthropic Agent Skills that pair with the **AdAdvisor MCP server**. The MCP server lives in a separate repo (`api-adadvisor`) and exposes ~33 Meta-ads tools to MCP-aware hosts (Claude Code, Claude.ai, ChatGPT, Cursor). This skills repo teaches the LLM *how* to use those tools effectively — workflow, sequencing, decision rules, anti-patterns. The MCP server is the plumbing; these skills are the brain.
+A public, MIT/Apache-2.0-licensed collection of Anthropic Agent Skills that pair with the **AdAdvisor MCP server**. The MCP server lives in a separate repo (`api-adadvisor`) and exposes about 60 tools (Meta ads, plus a business's products, Design Kits and the ads AdAdvisor makes for it) to MCP-aware hosts (Claude Code, Claude.ai, ChatGPT, Cursor). This skills repo teaches the LLM *how* to use those tools effectively — workflow, sequencing, decision rules, anti-patterns. The MCP server is the plumbing; these skills are the brain.
 
 ## Cardinal rules
 
@@ -91,7 +91,7 @@ End users install in one of two ways. Both routes consume artifacts the release 
 
 ### What ships in each release
 
-`.github/workflows/release.yml` triggers on every `v*.*.*` tag push and produces eight ZIPs (one per skill) attached to the GitHub release:
+`.github/workflows/release.yml` triggers on every `v*.*.*` tag push and produces nine ZIPs (one per skill) attached to the GitHub release:
 
 | Artifact | Contents | Typical size |
 | --- | --- | --- |
@@ -103,6 +103,7 @@ End users install in one of two ways. Both routes consume artifacts the release 
 | `adadvisor-creative.zip` | Just `skills/adadvisor-creative/` | ~34 KB |
 | `adadvisor-targeting.zip` | Just `skills/adadvisor-targeting/` | ~28 KB |
 | `adadvisor-playbooks.zip` | Just `skills/adadvisor-playbooks/` | ~32 KB |
+| `adadvisor-studio.zip` | Just `skills/adadvisor-studio/` | ~8 KB |
 
 Each ZIP wraps exactly one SKILL.md inside one top-level folder — the shape Claude.ai's and Claude Desktop's upload validator requires. We do NOT ship a multi-skill bundle: Claude.ai rejects ZIPs with more than one SKILL.md, and Claude Code installs the entire plugin via `/plugin install adadvisor@adadvisor` (no ZIP needed).
 
